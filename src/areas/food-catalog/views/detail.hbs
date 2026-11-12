@@ -1,0 +1,170 @@
+<div class="space-y-6">
+
+  <!-- Breadcrumb & Actions Bar -->
+  <div class="flex items-center justify-between">
+    <a href="/catalog" class="text-xs font-bold text-slate-500 hover:text-slate-900 flex items-center gap-1">
+      &larr; Back to Catalog Discovery
+    </a>
+    <div class="flex items-center gap-2">
+      {{#if isOwner}}
+        <a href="/catalog/manage/{{product.id}}/edit" class="text-xs font-bold px-3 py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-100">
+          Edit Food Details
+        </a>
+      {{/if}}
+      <span class="text-xs font-mono text-slate-400">Barcode: {{product.barcode}}</span>
+    </div>
+  </div>
+
+  <!-- Main Product Header -->
+  <div class="bg-white border border-slate-200 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <span>{{product.category}}</span>
+        <span>·</span>
+        <span class="text-slate-600">{{product.brand}}</span>
+      </div>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight mt-1">{{product.name}}</h1>
+      <p class="text-sm text-slate-600 mt-2 max-w-2xl">{{product.description}}</p>
+      
+      <!-- Dietary Tags -->
+      {{#if product.dietaryTags.length}}
+        <div class="flex flex-wrap gap-2 mt-4">
+          {{#each product.dietaryTags}}
+            <span class="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-slate-100 text-slate-800 rounded">
+              {{this}}
+            </span>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- Explainable Food Quality Score Seal -->
+    <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-slate-50 border border-slate-200 text-center min-w-[160px]">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Quality Score</div>
+      <div class="text-4xl font-black mt-1 {{#if (gte product.qualityScore 80)}}text-emerald-700{{else}}{{#if (gte product.qualityScore 60)}}text-amber-700{{else}}text-rose-700{{/if}}{{/if}}">
+        {{product.qualityScore}}<span class="text-lg text-slate-400 font-semibold">/100</span>
+      </div>
+      <div class="text-[10px] text-slate-400 mt-1">Explainable Formula (F04)</div>
+    </div>
+  </div>
+
+  <!-- Allergen Warning Banner (If allergens declared) -->
+  {{#if allergens.length}}
+    <div class="bg-rose-50 border-2 border-rose-300 rounded-lg p-4 flex items-start gap-3">
+      <div class="w-6 h-6 bg-rose-600 text-white rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">!</div>
+      <div>
+        <h4 class="text-sm font-black text-rose-900 uppercase tracking-tight">Declared Allergen Warning</h4>
+        <p class="text-xs text-rose-800 mt-0.5">This food product contains declared allergens: 
+          {{#each allergens}}
+            <span class="font-bold underline">{{this.name}} ({{this.allergenType}})</span>{{#unless @last}}, {{/unless}}
+          {{/each}}.
+        </p>
+      </div>
+    </div>
+  {{/if}}
+
+  <!-- Detailed Inspection: Nutrition Panel vs Ingredient Transparency -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- LEFT: FDA/EU Style Authentic Nutrition Facts Box (5 cols) -->
+    <div class="lg:col-span-5 bg-white p-6 border border-slate-200 rounded-lg">
+      <div class="nutrition-panel mx-auto">
+        <h3>Nutrition Facts</h3>
+        
+        <div class="nutrition-serving-header">
+          <div>Serving size: {{product.servingSize}}{{product.servingUnit}}</div>
+          <div class="text-xs text-slate-500 font-normal">Amounts displayed per 100{{product.servingUnit}} / per serving</div>
+        </div>
+
+        <div class="nutrition-calories-row">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-tight">Energy / Calories</div>
+            <div class="text-xs text-slate-500 font-medium">Per 100{{product.servingUnit}}</div>
+          </div>
+          <div class="nutrition-calories-number font-mono">
+            {{#each product.nutritionFacts}}
+              {{#if (eq this.nutrient "Energy")}}{{this.amountPer100g}}{{/if}}
+            {{/each}}
+            <span class="text-sm font-bold font-sans">kcal</span>
+          </div>
+        </div>
+
+        <!-- Nutrition Facts Breakdown Table -->
+        <div class="space-y-0.5 text-xs">
+          {{#each product.nutritionFacts}}
+            {{#unless (eq this.nutrient "Energy")}}
+              <div class="nutrition-row {{#if (or (eq this.nutrient 'Saturated Fat') (eq this.nutrient 'Sugars'))}}indent{{/if}}">
+                <span class="{{#if (or (eq this.nutrient 'Fat') (eq this.nutrient 'Carbohydrates') (eq this.nutrient 'Protein') (eq this.nutrient 'Salt'))}}font-bold{{else}}text-slate-700{{/if}}">
+                  {{this.nutrient}}
+                </span>
+                <span class="font-mono font-semibold">
+                  {{this.amountPer100g}}{{this.unit}}
+                </span>
+              </div>
+            {{/unless}}
+          {{/each}}
+        </div>
+
+        <div class="mt-4 pt-2 border-t-2 border-slate-900 text-[10px] text-slate-500 leading-tight">
+          * Nutrition records sourced directly from manufacturer declaration. Verified against standard food safety databases.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Declared Ingredients & Additives Breakdown (7 cols) -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- Ingredients Card -->
+      <div class="bg-white border border-slate-200 rounded-lg p-6">
+        <h3 class="text-base font-black text-slate-900 tracking-tight flex items-center justify-between">
+          <span>Declared Ingredients</span>
+          <span class="text-xs font-semibold text-slate-500 font-normal">{{product.ingredients.length}} items identified</span>
+        </h3>
+        <p class="text-xs text-slate-500 mt-1">Every declared ingredient is classified according to food rule databases for transparency.</p>
+
+        <div class="mt-4 space-y-2">
+          {{#if product.ingredients.length}}
+            {{#each product.ingredients}}
+              <div class="p-3 rounded border {{#if this.isAllergen}}bg-rose-50 border-rose-200{{else}}{{#if this.additiveCode}}bg-amber-50 border-amber-200{{else}}bg-slate-50 border-slate-200{{/if}}{{/if}} flex items-center justify-between text-xs">
+                <div>
+                  <span class="font-bold text-slate-900">{{this.name}}</span>
+                  {{#if this.additiveCode}}
+                    <span class="ml-2 additive-pill">Additive: {{this.additiveCode}}</span>
+                  {{/if}}
+                  {{#if this.isAllergen}}
+                    <span class="ml-2 allergen-pill">Allergen: {{this.allergenType}}</span>
+                  {{/if}}
+                </div>
+                <span class="text-[11px] font-bold uppercase {{#if (eq this.hazardLevel 'warning')}}text-rose-700{{else}}{{#if (eq this.hazardLevel 'caution')}}text-amber-700{{else}}text-emerald-700{{/if}}{{/if}}">
+                  {{this.hazardLevel}}
+                </span>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="text-xs text-slate-400 italic p-3">No ingredients declared for this food product yet.</div>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Additives & Safety Info -->
+      <div class="bg-white border border-slate-200 rounded-lg p-6">
+        <h4 class="text-sm font-black text-slate-900 tracking-tight">Food Safety & Compliance Summary</h4>
+        <div class="grid grid-cols-2 gap-4 mt-3 text-xs">
+          <div class="p-3 bg-slate-50 rounded border border-slate-200">
+            <div class="text-slate-400 font-bold uppercase text-[10px]">Additives Count</div>
+            <div class="text-lg font-black text-slate-800 mt-0.5">{{additives.length}} identified</div>
+          </div>
+          <div class="p-3 bg-slate-50 rounded border border-slate-200">
+            <div class="text-slate-400 font-bold uppercase text-[10px]">Allergen Flag Count</div>
+            <div class="text-lg font-black {{#if allergens.length}}text-rose-700{{else}}text-emerald-700{{/if}} mt-0.5">
+              {{allergens.length}} flagged
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+

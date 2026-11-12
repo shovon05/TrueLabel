@@ -1,0 +1,157 @@
+<div class="space-y-6">
+
+  <!-- Search & Filter Hero -->
+  <div class="bg-white p-6 border border-slate-200 rounded-lg">
+    <div class="max-w-3xl">
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight">Food Catalog & Transparency Discovery</h1>
+      <p class="text-sm text-slate-500 mt-1">Search packaged food records by brand, name, or barcode to inspect ingredients, allergens, and verified nutrition facts.</p>
+    </div>
+
+    <!-- Live Search & Barcode Lookup Form -->
+    <form action="/catalog" method="GET" class="mt-6 flex flex-col md:flex-row gap-3">
+      <div class="flex-grow relative">
+        <input
+          type="text"
+          name="q"
+          value="{{query}}"
+          placeholder="Search by food name, brand, or barcode (e.g. Oat, 890123...)"
+          class="w-full pl-4 pr-10 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent font-medium"
+        />
+        {{#if query}}
+          <a href="/catalog" class="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-bold">Clear</a>
+        {{/if}}
+      </div>
+
+      <div class="flex gap-2">
+        <select
+          name="category"
+          class="px-3 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white text-slate-700"
+        >
+          <option value="">All Categories</option>
+          {{#each categories}}
+            <option value="{{this}}" {{#if (eq ../selectedCategory this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+
+        <select
+          name="tag"
+          class="px-3 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white text-slate-700"
+        >
+          <option value="">All Dietary Tags</option>
+          {{#each dietaryTags}}
+            <option value="{{this}}" {{#if (eq ../selectedTag this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+
+        <button
+          type="submit"
+          class="px-5 py-2.5 bg-slate-900 text-white font-bold text-sm rounded hover:bg-slate-800 transition-colors whitespace-nowrap"
+        >
+          Search Foods
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Count & Active Filters Indicator -->
+  <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+    <div>
+      Found <strong class="text-slate-900 font-bold">{{total}}</strong> packaged food product(s)
+      {{#if query}} matching &ldquo;<span class="text-slate-800 font-semibold">{{query}}</span>&rdquo;{{/if}}
+      {{#if selectedCategory}} in <span class="font-semibold text-slate-800">{{selectedCategory}}</span>{{/if}}
+      {{#if selectedTag}} with tag <span class="font-semibold text-slate-800">{{selectedTag}}</span>{{/if}}
+    </div>
+    {{#if (eq user.role "manufacturer")}}
+      <a href="/catalog/manage/create" class="font-bold text-emerald-700 hover:underline">+ Register New Food Product</a>
+    {{/if}}
+  </div>
+
+  <!-- Food Products Grid -->
+  {{#if products.length}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {{#each products}}
+        <div class="bg-white border border-slate-200 rounded-lg p-5 flex flex-col justify-between hover:border-slate-400 transition-all">
+          <div>
+            <!-- Header: Category & Score Badge -->
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">{{this.category}}</span>
+              <span class="score-badge px-2.5 py-1 text-xs font-black {{#if (gte this.qualityScore 80)}}score-badge-high{{else}}{{#if (gte this.qualityScore 60)}}score-badge-mid{{else}}score-badge-low{{/if}}{{/if}}">
+                Score: {{this.qualityScore}}/100
+              </span>
+            </div>
+
+            <!-- Brand & Food Name -->
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-tight">{{this.brand}}</div>
+            <h2 class="text-lg font-black text-slate-900 leading-snug mt-0.5">
+              <a href="/catalog/product/{{this.id}}" class="hover:text-emerald-700 transition-colors">
+                {{this.name}}
+              </a>
+            </h2>
+
+            <!-- Barcode & Serving -->
+            <div class="text-xs text-slate-400 mt-1 font-mono">
+              Barcode: {{this.barcode}} · Serving: {{this.servingSize}}{{this.servingUnit}}
+            </div>
+
+            <!-- Dietary Tags -->
+            {{#if this.dietaryTags.length}}
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                {{#each this.dietaryTags}}
+                  <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 bg-slate-100 text-slate-700 rounded">
+                    {{this}}
+                  </span>
+                {{/each}}
+              </div>
+            {{/if}}
+
+            <!-- Declared Ingredients Summary -->
+            <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 line-clamp-2">
+              <strong class="text-slate-800">Ingredients:</strong>
+              {{#if this.ingredients.length}}
+                {{#each this.ingredients}}
+                  <span class="{{#if this.isAllergen}}text-rose-700 font-bold{{/if}}">{{this.name}}{{#unless @last}}, {{/unless}}</span>
+                {{/each}}
+              {{else}}
+                <span class="text-slate-400 italic">No ingredients declared yet</span>
+              {{/if}}
+            </div>
+          </div>
+
+          <!-- Card Footer Action -->
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <a
+              href="/catalog/product/{{this.id}}"
+              class="text-xs font-bold text-slate-900 hover:text-emerald-700 flex items-center gap-1"
+            >
+              Inspect Nutrition & Allergens &rarr;
+            </a>
+            <span class="text-[11px] font-semibold text-slate-400">
+              {{#if this.nutritionFacts.length}}{{this.nutritionFacts.length}} facts{{/if}}
+            </span>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <!-- Empty State -->
+    <div class="bg-white border border-slate-200 rounded-lg p-12 text-center max-w-md mx-auto my-8">
+      <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 text-lg font-bold">
+        ?
+      </div>
+      <h3 class="text-lg font-black text-slate-900">No packaged foods match your criteria</h3>
+      <p class="text-sm text-slate-500 mt-1">Try modifying your keyword, resetting filters, or scanning a different barcode.</p>
+      <div class="mt-6 flex justify-center gap-3">
+        <a href="/catalog" class="px-4 py-2 border border-slate-300 text-slate-700 font-bold text-xs rounded hover:bg-slate-50">
+          Reset Filters
+        </a>
+        {{#if (eq user.role "manufacturer")}}
+          <a href="/catalog/manage/create" class="px-4 py-2 bg-emerald-700 text-white font-bold text-xs rounded hover:bg-emerald-800">
+            Add This Food
+          </a>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+</div>
+

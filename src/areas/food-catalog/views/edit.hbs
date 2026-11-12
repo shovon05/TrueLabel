@@ -1,0 +1,91 @@
+<div class="max-w-3xl mx-auto my-6 bg-white p-8 border border-slate-200 rounded-lg shadow-sm">
+  <div class="mb-6 pb-4 border-b border-slate-200 flex justify-between items-center">
+    <div>
+      <a href="/catalog/product/{{product.id}}" class="text-xs font-bold text-slate-500 hover:text-slate-900">&larr; Back to Product</a>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">Edit Food Product</h1>
+      <p class="text-xs text-slate-500 mt-0.5">Editing record for {{product.name}} (ID: {{product.id}})</p>
+    </div>
+    
+    <!-- Archive Action Button -->
+    <form action="/catalog/manage/{{product.id}}/archive" method="POST" onsubmit="return confirm('Archive this food product? It will be hidden from catalog discovery.');">
+      <button type="submit" class="text-xs font-bold px-3 py-1.5 rounded border border-rose-300 text-rose-700 hover:bg-rose-50">
+        Archive Product
+      </button>
+    </form>
+  </div>
+
+  {{#if error}}
+    <div class="mb-6 p-4 rounded bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium">
+      {{error}}
+    </div>
+  {{/if}}
+
+  <form action="/catalog/manage/{{product.id}}/edit" method="POST" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Food Name *</label>
+        <input
+          type="text"
+          name="name"
+          value="{{product.name}}"
+          required
+          class="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Brand Name *</label>
+        <input
+          type="text"
+          name="brand"
+          value="{{product.brand}}"
+          required
+          class="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Category *</label>
+        <select
+          name="category"
+          required
+          class="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+        >
+          {{#each categories}}
+            <option value="{{this}}" {{#if (eq ../product.category this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Barcode *</label>
+        <input
+          type="text"
+          name="barcode"
+          value="{{product.barcode}}"
+          required
+          class="w-full px-3 py-2 border border-slate-300 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-900"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Product Description</label>
+      <textarea
+        name="description"
+        rows="3"
+        class="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+      >{{product.description}}</textarea>
+    </div>
+
+    <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+      <a href="/catalog/product/{{product.id}}" class="px-4 py-2 border border-slate-300 text-slate-700 font-bold text-xs rounded hover:bg-slate-50">
+        Cancel
+      </a>
+      <button
+        type="submit"
+        class="px-5 py-2 bg-slate-900 text-white font-bold text-xs rounded hover:bg-slate-800 transition-colors uppercase tracking-wider"
+      >
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
+
