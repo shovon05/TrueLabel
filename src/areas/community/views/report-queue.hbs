@@ -1,0 +1,28 @@
+<div class="max-w-5xl mx-auto space-y-5">
+  <a href="/catalog" class="text-sm text-slate-600 hover:underline">&larr; Catalog</a>
+  <h1 class="text-2xl font-black text-slate-900">Food complaint queue</h1>
+  <p class="text-sm text-slate-500">Inspector and admin access only. Reports are unverified until investigated.</p>
+  {{#each reports}}
+    <article class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
+      <div class="flex flex-wrap justify-between gap-3">
+        <div>
+          <h2 class="font-bold">{{this.product.name}} — {{this.product.brand}}</h2>
+          <p class="text-xs text-slate-500">Report #{{this.id}} · {{this.author.name}} · {{this.category}}</p>
+        </div>
+        <span class="text-xs font-bold uppercase text-slate-600">{{this.status}}</span>
+      </div>
+      <p class="text-sm whitespace-pre-wrap text-slate-700">{{this.description}}</p>
+      <form action="/community/reports/{{this.id}}/status" method="POST" class="flex items-center gap-2">
+        <label for="report-{{this.id}}" class="text-xs font-semibold">Status</label>
+        <select id="report-{{this.id}}" name="status" class="border border-slate-300 rounded p-2 text-sm">
+          <option value="investigating" {{#if (eq this.status 'investigating')}}selected{{/if}}>Investigating</option>
+          <option value="resolved" {{#if (eq this.status 'resolved')}}selected{{/if}}>Resolved</option>
+          <option value="dismissed" {{#if (eq this.status 'dismissed')}}selected{{/if}}>Dismissed</option>
+        </select>
+        <button type="submit" class="bg-slate-900 text-white rounded text-sm px-3 py-2">Save</button>
+      </form>
+    </article>
+  {{else}}
+    <div class="bg-white border border-slate-200 rounded p-6 text-sm text-slate-500">No complaints yet.</div>
+  {{/each}}
+</div>
