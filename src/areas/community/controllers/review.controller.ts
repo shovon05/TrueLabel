@@ -19,6 +19,7 @@ export class ReviewController {
   async view(@Param('productId', ParseIntPipe) id: number, @Req() req: Request) {
     const { product, reviews, averageRating } = await this.reviews.forProduct(id);
     const user = req.session?.user || null;
+    const alreadyReviewed = user?.role === 'consumer' && reviews.some((r) => r.userId === user.id);
     const canReply = user?.role === 'admin' ||
       (user?.role === 'manufacturer' && user.id === product.manufacturerId);
     return {
@@ -30,7 +31,7 @@ export class ReviewController {
         postedOn: review.createdAt?.toLocaleDateString('en-GB') || '',
         canReply,
       })),
-      averageRating, user, canReview: user?.role === 'consumer',
+      averageRating, user, alreadyReviewed, canReview: user?.role === 'consumer' && !alreadyReviewed,
     };
   }
 

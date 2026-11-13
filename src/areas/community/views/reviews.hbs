@@ -32,6 +32,9 @@
       <button class="bg-slate-900 text-white font-semibold text-sm px-4 py-2 rounded" type="submit">Submit review</button>
     </form>
   {{else}}
+    {{#if alreadyReviewed}}
+      <p class="text-sm p-4 bg-slate-50 border border-slate-200 rounded">You've already reviewed this product.</p>
+    {{/if}}
     {{#unless user}}
       <p class="text-sm p-4 bg-slate-50 border border-slate-200 rounded"><a class="underline font-semibold" href="/auth/login">Sign in</a> as a consumer to add a review.</p>
     {{/unless}}

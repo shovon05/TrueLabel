@@ -23,7 +23,7 @@ This change adds F11 consumer reviews and F13 product complaint reporting.
 6. Sign up with a real consumer account, not the demo role switcher. The demo user ID is not necessarily a persisted database user, and F11/F13 use foreign keys.
 7. Verify all four pages plus role restrictions before merging.
 
-PostgreSQL synchronize is disabled by default. Do not enable DB_SYNC=true against your team's live Supabase database. Set up and review a migration for food_reviews and food_reports before deployment.
+A reviewed PostgreSQL schema draft is in database/migrations/2026-11-14-f11-f13.sql. It has not been executed.\n\nPostgreSQL synchronize is disabled by default. Do not enable DB_SYNC=true against your team's live Supabase database. Set up and review a migration for food_reviews and food_reports before deployment.
 
 The current shared application lacks CSRF protection for session-based POST forms. Address that as a separate shared security fix before real deployment.
 
