@@ -17,6 +17,12 @@
       <a href="/catalog" class="hover:text-slate-900 transition-colors">Catalog Discovery</a>
       {{#if user}}
         <a href="/personal/profile" class="hover:text-emerald-700 transition-colors font-medium">Dietary Profile</a>
+        {{#if (eq user.role 'consumer')}}
+          <a href="/community/reports/mine" class="hover:text-slate-900">My Reports</a>
+        {{/if}}
+        {{#if (or (eq user.role 'inspector') (eq user.role 'admin'))}}
+          <a href="/community/reports/queue" class="hover:text-slate-900">Complaint Queue</a>
+        {{/if}}
       {{/if}}
       {{#if (eq user.role "manufacturer")}}
         <a href="/catalog/manage/create" class="hover:text-emerald-700 font-semibold transition-colors">+ Add Product</a>

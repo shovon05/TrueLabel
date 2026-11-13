@@ -205,3 +205,14 @@
 
 
 
+
+---
+
+### 2026-11-14 00:59:58 +06:00 | F11/F13 community reviews and reports
+- Implemented consumer product reviews, rating summaries and manufacturer replies (F11).
+- Added private food complaints, consumer report history and inspector/admin status updates (F13).
+- Added NestJS controllers/services, validation DTOs, TypeORM entities, Handlebars views and Jest unit tests.
+- Added community navigation links and module/entity registration.
+- Included a non-secret .env.example; real .env credentials were not committed.
+- PostgreSQL automatic schema sync is now opt-in (DB_SYNC=true); use a reviewed migration before applying new entities to the shared database.
+- Tests/build have not been run in this connector environment; verify with npm test, npm run build and npm run test:e2e in an isolated development environment.
