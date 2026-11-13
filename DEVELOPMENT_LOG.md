@@ -151,3 +151,57 @@
   - Enforces a fallback notice instructing the user to run the command manually if automatic installation fails or is constrained by sandbox boundaries.
 - **Verification**: `PROJECT_RULES.md` updated and validated.
 
+
+---
+
+### Entry 011 | 2026-11-13 20:22:00 +06:00 | High Business Value Feature F16: Food Preference & Allergen Profile
+- **Action**: Delivered **Feature F16: Food Preference & Allergen Profile** under the `personal-food` Area, fully integrated into the food catalog discovery engine.
+- **Architectural Implementation**:
+  1. **Personal Food Area (`src/areas/personal-food/`)**:
+     - `models/preference-profile.entity.ts`: `PreferenceProfile` entity capturing major allergens ("Big 9"), dietary preferences (Vegan, Vegetarian, Halal, etc.), custom avoided ingredients, nutritional ceiling thresholds (sugar, sodium, calorie target), and body metrics for Mifflin-St Jeor metabolic calculations.
+     - `models/dto/update-preference-profile.dto.ts`: Input validation and sanitization using `class-validator` and `class-transformer`.
+     - `services/preference.service.ts`: Core domain service containing profile CRUD and the `evaluateProductConflict(profile, product)` algorithm. Evaluates:
+       - **Critical Allergen Conflicts**: Exact `allergenType` matches, common allergen derivatives (Dairy/Whey/Casein for Milk, Wheat/Rye/Barley for Gluten, etc.), and ingredient name matches.
+       - **Dietary Lifestyle Conflicts**: Detects non-vegan, non-vegetarian, or non-gluten-free ingredients when users specify dietary preferences.
+       - **Nutritional Ceiling Warnings**: Flags products whose per-serving sugar or sodium exceeds user targets.
+     - `controllers/preference.controller.ts`: Thin controller (<25 lines per action) enforcing `AuthenticatedGuard` and delegating to `PreferenceService`.
+     - `views/profile.hbs`: Accessible, high-contrast settings UI built with `frontend-design` standards and featuring mandatory medical & allergen safety disclaimers.
+     - `personal-food.module.ts`: Area encapsulation module exporting `PreferenceService`.
+  2. **Food Catalog Integration**:
+     - Injected `PreferenceService` into `FoodCatalogController`.
+     - `detail.hbs`: Renders dynamic, high-visibility **Personal Health & Allergen Safety Banners**:
+       - Red critical alert for declared allergen matches with ingredient source breakdown.
+       - Amber warning for dietary lifestyle conflicts.
+       - Blue advisory for sugar/sodium target exceedance.
+       - Green clearance badge when products are verified 100% safe for the user's profile.
+     - `index.hbs`: Shows real-time personalized badges (`⚠️ Allergen Alert` / `✓ Safe`) on food product cards.
+     - `navbar.hbs` & `_navbar.hbs`: Added "Dietary Profile" navigation link for authenticated users.
+  3. **Demo Seed Data**:
+     - Configured `SeedService` to initialize `consumer@truelabel.demo` (Sarah Consumer) with active Peanut and Milk allergies, Vegan preference, and 10g max sugar threshold.
+- **Test Execution & Verification**:
+  - `src/areas/personal-food/services/preference.service.spec.ts`: 11 unit tests (100% pass with AAA pattern and mock isolation).
+  - `src/areas/personal-food/controllers/preference.controller.spec.ts`: 2 unit tests (100% pass).
+  - `src/areas/food-catalog/controllers/food-catalog.controller.spec.ts`: 4 unit tests (100% pass).
+  - `test/catalog.e2e-spec.ts`: 6 E2E integration tests including F16 authentication guards and detail hook (100% pass).
+  - **Total Test Suites**: 7 passed, 43 unit tests passing cleanly with zero failures.
+
+
+---
+
+### Entry 012 | 2026-11-13 21:48:00 +06:00 | Live Supabase PostgreSQL Connected as Single Source of Truth
+- **Action**: Connected application directly to the live cloud PostgreSQL database on Supabase as the sole, authoritative data store.
+- **Architectural Enhancements**:
+  1. **Direct Cloud Database Synchronization**:
+     - Configured `src/config/database.config.ts` to strictly prioritize `DATABASE_URL` with SSL connection options and connection pooling (`aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres`).
+     - Registered all domain entities (`User`, `FoodProduct`, `Ingredient`, `NutritionFact`, `PreferenceProfile`) directly in the connection pool.
+     - Enabled real-time schema synchronization (`synchronize: true`), automatically generating the `preference_profiles` table directly in Supabase cloud PostgreSQL.
+  2. **Startup Verification**:
+     - Updated `src/main.ts` to log and verify the active database source upon boot.
+     - Removed obsolete local `truelabel_dev.sqlite` to eliminate dual-database drift.
+  3. **Data Verification**:
+     - Confirmed live PostgreSQL tables: `users`, `food_products`, `ingredients`, `nutrition_facts`, and `preference_profiles`.
+     - Confirmed active seeding of `consumer@truelabel.demo` preference profile directly in Supabase.
+     - Verified HTTP `GET /catalog` returning status 200 OK reading directly from live Supabase records.
+
+
+
