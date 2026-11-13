@@ -1,0 +1,72 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <a href="/catalog/product/{{product.id}}" class="text-sm text-slate-600 hover:underline">&larr; Back to product</a>
+
+  <div class="bg-white border border-slate-200 rounded-lg p-6">
+    <p class="text-xs font-semibold uppercase text-slate-500">{{product.brand}}</p>
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-1">
+      <h1 class="text-2xl font-black text-slate-900">Reviews: {{product.name}}</h1>
+      <div class="text-right">
+        <div class="text-xl font-black">{{#if averageRating}}{{averageRating}} / 5{{else}}Not rated{{/if}}</div>
+        <div class="text-xs text-slate-500">{{reviews.length}} reviews</div>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mt-3">Consumer opinions are not an official food safety assessment.</p>
+  </div>
+
+  {{#if canReview}}
+    <form method="POST" action="/community/products/{{product.id}}/reviews" class="bg-white border border-slate-200 rounded-lg p-6 space-y-4">
+      <h2 class="font-bold text-lg">Write a review</h2>
+      <label class="block text-sm font-semibold">Rating
+        <select name="rating" required class="block w-full mt-1 border border-slate-300 rounded p-2">
+          <option value="5">5 — Excellent</option><option value="4">4 — Good</option>
+          <option value="3">3 — Average</option><option value="2">2 — Poor</option>
+          <option value="1">1 — Very poor</option>
+        </select>
+      </label>
+      <label class="block text-sm font-semibold">Title (optional)
+        <input name="title" maxlength="120" class="block w-full mt-1 border border-slate-300 rounded p-2"/>
+      </label>
+      <label class="block text-sm font-semibold">Your experience
+        <textarea name="comment" minlength="10" maxlength="2000" rows="4" required class="block w-full mt-1 border border-slate-300 rounded p-2"></textarea>
+      </label>
+      <button class="bg-slate-900 text-white font-semibold text-sm px-4 py-2 rounded" type="submit">Submit review</button>
+    </form>
+  {{else}}
+    {{#if alreadyReviewed}}
+      <p class="text-sm p-4 bg-slate-50 border border-slate-200 rounded">You've already reviewed this product.</p>
+    {{/if}}
+    {{#unless user}}
+      <p class="text-sm p-4 bg-slate-50 border border-slate-200 rounded"><a class="underline font-semibold" href="/auth/login">Sign in</a> as a consumer to add a review.</p>
+    {{/unless}}
+  {{/if}}
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-bold text-slate-900">Customer reviews</h2>
+    {{#each reviews}}
+      <article class="bg-white border border-slate-200 rounded-lg p-5 space-y-2">
+        <div class="flex justify-between gap-3">
+          <div class="text-sm font-semibold">{{this.authorName}} <span class="text-xs text-slate-500 font-normal">· {{this.postedOn}}</span></div>
+          <span class="text-sm font-bold text-amber-700">{{this.rating}} / 5</span>
+        </div>
+        {{#if this.title}}<h3 class="font-semibold text-slate-900">{{this.title}}</h3>{{/if}}
+        <p class="text-sm whitespace-pre-wrap text-slate-700">{{this.comment}}</p>
+        {{#if this.manufacturerReply}}
+          <div class="bg-slate-50 border-l-2 border-slate-400 p-3 mt-3">
+            <div class="text-xs font-bold mb-1">Manufacturer response</div>
+            <p class="text-sm whitespace-pre-wrap">{{this.manufacturerReply}}</p>
+          </div>
+        {{/if}}
+        {{#if this.canReply}}
+          <form method="POST" action="/community/reviews/{{this.id}}/reply" class="space-y-2 pt-3">
+            <label class="block text-xs font-semibold">Respond to this review
+              <textarea name="reply" rows="2" minlength="2" maxlength="1000" required class="mt-1 w-full rounded border border-slate-300 p-2 text-sm">{{this.manufacturerReply}}</textarea>
+            </label>
+            <button type="submit" class="rounded bg-slate-900 text-white px-3 py-2 text-sm">Save response</button>
+          </form>
+        {{/if}}
+      </article>
+    {{else}}
+      <div class="bg-white border border-slate-200 rounded p-5 text-sm text-slate-500">No reviews yet.</div>
+    {{/each}}
+  </section>
+</div>

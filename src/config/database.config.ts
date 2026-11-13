@@ -5,6 +5,8 @@ import { FoodProduct } from '../areas/food-catalog/models/food-product.entity';
 import { Ingredient } from '../areas/food-catalog/models/ingredient.entity';
 import { NutritionFact } from '../areas/food-catalog/models/nutrition-fact.entity';
 import { PreferenceProfile } from '../areas/personal-food/models/preference-profile.entity';
+import { FoodReview } from '../areas/community/models/food-review.entity';
+import { FoodReport } from '../areas/community/models/food-report.entity';
 
 dotenv.config();
 
@@ -14,6 +16,8 @@ const ALL_ENTITIES = [
   Ingredient,
   NutritionFact,
   PreferenceProfile,
+  FoodReview,
+  FoodReport,
 ];
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
@@ -28,7 +32,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
       ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
       entities: ALL_ENTITIES,
       autoLoadEntities: true,
-      synchronize: true, // Creates tables and syncs schema automatically
+      synchronize: process.env.DB_SYNC === 'true', // Only enable on an isolated development DB
       extra: {
         max: 10,
         connectionTimeoutMillis: 10000,
@@ -47,7 +51,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
       entities: ALL_ENTITIES,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.DB_SYNC === 'true',
       extra: {
         max: 10,
         connectionTimeoutMillis: 10000,
