@@ -6,6 +6,7 @@ import { User } from '../areas/identity/models/user.entity';
 import { FoodProduct } from '../areas/food-catalog/models/food-product.entity';
 import { Ingredient } from '../areas/food-catalog/models/ingredient.entity';
 import { NutritionFact } from '../areas/food-catalog/models/nutrition-fact.entity';
+import { PreferenceProfile } from '../areas/personal-food/models/preference-profile.entity';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
@@ -18,11 +19,44 @@ export class SeedService implements OnApplicationBootstrap {
     private readonly ingredientRepo: Repository<Ingredient>,
     @InjectRepository(NutritionFact)
     private readonly nutritionRepo: Repository<NutritionFact>,
+    @InjectRepository(PreferenceProfile)
+    private readonly preferenceRepo: Repository<PreferenceProfile>,
   ) {}
 
   async onApplicationBootstrap() {
     await this.seedUsers();
     await this.seedFoodProducts();
+    await this.seedPreferenceProfile();
+  }
+
+  private async seedPreferenceProfile() {
+    const consumer = await this.userRepo.findOne({
+      where: { email: 'consumer@truelabel.demo' },
+    });
+    if (!consumer) return;
+
+    const existing = await this.preferenceRepo.findOne({
+      where: { userId: consumer.id },
+    });
+    if (existing) return;
+
+    await this.preferenceRepo.save(
+      this.preferenceRepo.create({
+        userId: consumer.id,
+        allergies: ['Peanut', 'Milk'],
+        dietaryPreferences: ['Vegan'],
+        dislikedIngredients: ['High Fructose Corn Syrup'],
+        calorieGoal: 2000,
+        maxSugarPerServing: 10,
+        maxSodiumPerServing: 1.5,
+        minProteinPerServing: 10,
+        age: 26,
+        gender: 'female',
+        heightCm: 168,
+        weightKg: 58,
+        activityLevel: 'moderate',
+      }),
+    );
   }
 
   private async seedUsers() {

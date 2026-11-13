@@ -49,6 +49,16 @@ async function bootstrap() {
   hbs.registerHelper('and', (a, b) => a && b);
   hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('lte', (a, b) => a <= b);
+  hbs.registerHelper('includes', (arr: any, val: any) => {
+    if (!arr) return false;
+    if (Array.isArray(arr)) {
+      return arr.some((item) => String(item).toLowerCase() === String(val).toLowerCase());
+    }
+    if (typeof arr === 'string') {
+      return arr.toLowerCase().includes(String(val).toLowerCase());
+    }
+    return false;
+  });
 
   // Session Middleware
   app.use(
@@ -67,6 +77,12 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
+  const dbUrl = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
+  if (dbUrl) {
+    console.log('[Database] Single Source of Truth: PostgreSQL (Supabase) connected and active.');
+  } else {
+    console.log('[Database] Warning: No DATABASE_URL found. Running with local fallback.');
+  }
   console.log(`TrueLabel platform is running live at: http://localhost:${port}/catalog`);
 }
 

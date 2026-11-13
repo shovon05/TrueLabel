@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FoodCatalogController } from './food-catalog.controller';
 import { CatalogService } from '../services/catalog.service';
+import { PreferenceService } from '../../personal-food/services/preference.service';
 
 describe('FoodCatalogController (Unit Tests)', () => {
   let controller: FoodCatalogController;
   let catalogService: jest.Mocked<Partial<CatalogService>>;
+  let preferenceService: jest.Mocked<Partial<PreferenceService>>;
 
   const mockProduct = {
     id: 1,
@@ -33,12 +35,31 @@ describe('FoodCatalogController (Unit Tests)', () => {
       }),
     };
 
+    preferenceService = {
+      findByUserId: jest.fn().mockResolvedValue(null),
+      evaluateProductConflict: jest.fn().mockReturnValue({
+        hasConflicts: false,
+        hasAllergenConflict: false,
+        hasDietaryConflict: false,
+        hasNutritionWarning: false,
+        conflicts: [],
+        matchedAllergies: [],
+        dietaryMismatches: [],
+        isSafeForUser: true,
+        profileConfigured: false,
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FoodCatalogController],
       providers: [
         {
           provide: CatalogService,
           useValue: catalogService,
+        },
+        {
+          provide: PreferenceService,
+          useValue: preferenceService,
         },
       ],
     }).compile();

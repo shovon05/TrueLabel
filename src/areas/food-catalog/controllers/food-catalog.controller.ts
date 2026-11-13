@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CatalogService } from '../services/catalog.service';
+import { PreferenceService } from '../../personal-food/services/preference.service';
 import { CreateFoodProductDto } from '../models/dto/create-food-product.dto';
 import { SearchFoodProductDto } from '../models/dto/search-food-product.dto';
 import { AuthenticatedGuard } from '../../../common/guards/authenticated.guard';
@@ -23,7 +24,10 @@ import { Roles } from '../../../common/decorators/roles.decorator';
 
 @Controller('catalog')
 export class FoodCatalogController {
-  constructor(private readonly catalogService: CatalogService) {}
+  constructor(
+    private readonly catalogService: CatalogService,
+    private readonly preferenceService: PreferenceService,
+  ) {}
 
   /**
    * Catalog Discovery: Search, filter by category/tag, score breakdown
@@ -35,9 +39,24 @@ export class FoodCatalogController {
       await this.catalogService.searchAndFilter(searchDto);
     const filterOptions = await this.catalogService.getFilterOptions();
 
+    let userProfile = null;
+    if (req.session?.user) {
+      userProfile = await this.preferenceService.findByUserId(req.session.user.id);
+    }
+
+    const annotatedItems = items.map((prod) => {
+      const conflict = userProfile
+        ? this.preferenceService.evaluateProductConflict(userProfile, prod)
+        : null;
+      return {
+        ...prod,
+        userConflict: conflict,
+      };
+    });
+
     return {
       title: 'Food Catalog & Transparency Score — TrueLabel',
-      products: items,
+      products: annotatedItems,
       total,
       page,
       totalPages,
@@ -48,6 +67,7 @@ export class FoodCatalogController {
       categories: filterOptions.categories,
       dietaryTags: filterOptions.dietaryTags,
       user: req.session?.user || null,
+      userProfile,
     };
   }
 
@@ -83,11 +103,24 @@ export class FoodCatalogController {
     const allergens = product.ingredients?.filter((i) => i.isAllergen) || [];
     const additives = product.ingredients?.filter((i) => i.additiveCode) || [];
 
+    // Personal Allergen & Dietary Conflict Evaluation (Feature F16)
+    let conflictEvaluation = null;
+    let userProfile = null;
+    if (req.session?.user) {
+      userProfile = await this.preferenceService.findByUserId(req.session.user.id);
+      conflictEvaluation = this.preferenceService.evaluateProductConflict(
+        userProfile,
+        product,
+      );
+    }
+
     return {
       title: `${product.name} (${product.brand}) — TrueLabel`,
       product,
       allergens,
       additives,
+      conflictEvaluation,
+      userProfile,
       isOwner:
         req.session?.user?.role === 'admin' ||
         (req.session?.user?.role === 'manufacturer' &&

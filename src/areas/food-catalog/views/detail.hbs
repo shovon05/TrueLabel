@@ -48,6 +48,97 @@
     </div>
   </div>
 
+  <!-- FEATURE F16: Personalized Health & Allergen Conflict Engine -->
+  {{#if user}}
+    {{#if conflictEvaluation.profileConfigured}}
+      {{#if conflictEvaluation.hasAllergenConflict}}
+        <div class="bg-rose-50 border-2 border-rose-600 rounded-lg p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs">⚠️</span>
+              <h3 class="text-sm font-black text-rose-950 uppercase tracking-tight">CRITICAL ALLERGEN CONFLICT DETECTED</h3>
+            </div>
+            <a href="/personal/profile" class="text-[11px] font-bold text-rose-800 hover:text-rose-950 underline">Edit Profile</a>
+          </div>
+          <p class="text-xs text-rose-900 leading-relaxed font-medium">
+            This food product contains ingredients that conflict with your declared allergy profile:
+          </p>
+          <div class="space-y-1.5">
+            {{#each conflictEvaluation.conflicts}}
+              {{#if (eq this.category "allergen")}}
+                <div class="p-2.5 rounded bg-white border border-rose-300 text-xs flex items-start gap-2">
+                  <span class="font-bold text-rose-700 uppercase text-[10px] px-1.5 py-0.5 bg-rose-100 rounded">Match</span>
+                  <div>
+                    <span class="font-bold text-rose-950">{{this.title}}</span>
+                    <span class="block text-slate-700 text-[11px] mt-0.5">{{this.description}}</span>
+                  </div>
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        </div>
+      {{/if}}
+
+      {{#if conflictEvaluation.hasDietaryConflict}}
+        <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-amber-700 font-bold">⚠️</span>
+              <h4 class="text-xs font-black text-amber-950 uppercase tracking-tight">Dietary Lifestyle Conflict</h4>
+            </div>
+            <a href="/personal/profile" class="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline">Edit Profile</a>
+          </div>
+          {{#each conflictEvaluation.conflicts}}
+            {{#if (eq this.category "dietary")}}
+              <p class="text-xs text-amber-900">{{this.description}}</p>
+            {{/if}}
+          {{/each}}
+        </div>
+      {{/if}}
+
+      {{#if conflictEvaluation.hasNutritionWarning}}
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-900 flex items-start gap-2">
+          <span class="text-blue-700 font-bold">ℹ️</span>
+          <div>
+            <span class="font-bold">Nutritional Ceiling Warning:</span>
+            {{#each conflictEvaluation.conflicts}}
+              {{#if (eq this.category "nutrition")}}
+                <span class="block text-[11px] text-blue-800 mt-0.5">{{this.description}}</span>
+              {{/if}}
+            {{/each}}
+          </div>
+        </div>
+      {{/if}}
+
+      {{#if conflictEvaluation.isSafeForUser}}
+        <div class="bg-emerald-50 border border-emerald-300 rounded-lg p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">✓</div>
+            <div>
+              <h4 class="text-xs font-bold text-emerald-950 uppercase tracking-tight">Clear for Your Dietary Profile</h4>
+              <p class="text-xs text-emerald-800 mt-0.5">
+                No declared allergens or dietary restrictions from your profile ({{#each userProfile.allergies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{#if userProfile.dietaryPreferences.length}} · {{#each userProfile.dietaryPreferences}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}) were flagged in this product.
+              </p>
+            </div>
+          </div>
+          <a href="/personal/profile" class="text-[11px] font-bold text-emerald-800 hover:text-emerald-950 underline flex-shrink-0">My Profile</a>
+        </div>
+      {{/if}}
+
+    {{else}}
+      <!-- Profile Not Configured Callout -->
+      <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div class="text-xs font-bold text-slate-800">Personalize Your Allergen Safety</div>
+          <div class="text-xs text-slate-500 mt-0.5">Configure your allergy and dietary preferences to see automated real-time conflict warnings.</div>
+        </div>
+        <a href="/personal/profile" class="px-3 py-1.5 bg-slate-900 text-white font-bold text-xs rounded hover:bg-slate-800 text-center flex-shrink-0">
+          Configure Profile &rarr;
+        </a>
+      </div>
+    {{/if}}
+  {{/if}}
+
   <!-- Allergen Warning Banner (If allergens declared) -->
   {{#if allergens.length}}
     <div class="bg-rose-50 border-2 border-rose-300 rounded-lg p-4 flex items-start gap-3">

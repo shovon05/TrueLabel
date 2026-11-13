@@ -29,6 +29,16 @@ describe('Food Catalog (E2E Integration Test)', () => {
     hbs.registerHelper('and', (a, b) => a && b);
     hbs.registerHelper('gte', (a, b) => a >= b);
     hbs.registerHelper('lte', (a, b) => a <= b);
+    hbs.registerHelper('includes', (arr: any, val: any) => {
+      if (!arr) return false;
+      if (Array.isArray(arr)) {
+        return arr.some((item) => String(item).toLowerCase() === String(val).toLowerCase());
+      }
+      if (typeof arr === 'string') {
+        return arr.toLowerCase().includes(String(val).toLowerCase());
+      }
+      return false;
+    });
 
     app.use(
       session({
@@ -79,5 +89,21 @@ describe('Food Catalog (E2E Integration Test)', () => {
 
     expect(response.text).toContain('Sign In');
     expect(response.text).toContain('consumer@truelabel.demo');
+  });
+
+  it('GET /personal/profile without authentication should require login (401)', async () => {
+    await request(app.getHttpServer())
+      .get('/personal/profile')
+      .expect(401);
+  });
+
+  it('GET /catalog/product/1 should render product details with F16 health profile hook', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/catalog/product/1')
+      .expect(200);
+
+    expect(response.text).toContain('Organic Whole Oat Drink');
+    expect(response.text).toContain('Nutrition Facts');
+    expect(response.text).toContain('Declared Ingredients');
   });
 });
