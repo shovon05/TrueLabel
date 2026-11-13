@@ -4,6 +4,24 @@
 
 ---
 
+## 0. AI Agent & Developer Onboarding Protocol (First-Time Setup)
+
+When anyone (developer or AI agent) starts working on this project for the first time, the AI agent must strictly follow this initialization procedure upon the initial prompt/session:
+
+1. **Mandatory Skill Verification & Automatic Installation**:
+   - The AI agent **must automatically check** whether the `frontend-design` skill is installed in the project (under `.agents/skills/frontend-design/` or in the agent's available skills).
+   - If the skill is not installed or missing, the AI agent **must automatically execute the installation command**:
+     ```bash
+     npx skills add https://github.com/anthropics/skills --skill frontend-design
+     ```
+2. **Fallback Notification Directive**:
+   - If the automatic installation cannot be executed or fails (e.g., due to sandbox/network restrictions or missing CLI binaries), the AI agent **must immediately instruct the user** to install it manually by running:
+     ```bash
+     npx skills add https://github.com/anthropics/skills --skill frontend-design
+     ```
+
+---
+
 ## 1. Strict MVC Protocol & Boundary Enforcement
 
 The system follows a strict **Model-View-Controller (MVC)** architectural design. Cross-layer leakage is strictly prohibited.

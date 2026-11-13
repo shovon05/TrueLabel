@@ -139,3 +139,15 @@
     - `public.ingredients` (12 rows with allergen flags)
     - `public.nutrition_facts` (21 rows)
   - `GET /catalog` tested and confirmed returning HTTP 200 OK reading directly from Supabase.
+
+
+---
+
+### Entry 010 | 2026-11-13 17:57:00 +06:00 | Added First-Time Setup Rule for Frontend Design Skill
+- **Action**: Updated `PROJECT_RULES.md` by establishing **Section 0: AI Agent & Developer Onboarding Protocol (First-Time Setup)**.
+- **Protocol Details**:
+  - Requires AI agents on initial prompt/session to automatically check for the `frontend-design` skill (`.agents/skills/frontend-design/`).
+  - Mandates automatic installation via `npx skills add https://github.com/anthropics/skills --skill frontend-design`.
+  - Enforces a fallback notice instructing the user to run the command manually if automatic installation fails or is constrained by sandbox boundaries.
+- **Verification**: `PROJECT_RULES.md` updated and validated.
+
