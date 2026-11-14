@@ -204,4 +204,55 @@
      - Verified HTTP `GET /catalog` returning status 200 OK reading directly from live Supabase records.
 
 
+---
+
+### Entry 013 | 2026-11-15 00:43:00 +06:00 | Delivered Feature F06: Food Safety Documents & Licences Foundation
+- **Action**: Delivered **Feature F06: Safety Documents & Licences Foundation** under the `food-safety` Area, providing full manufacturer licence verification and an official document review state machine.
+- **Architectural Implementation**:
+  1. **Food Safety Area (`src/areas/food-safety/`)**:
+     - `models/food-safety-document.entity.ts`: `FoodSafetyDocument` entity capturing accreditation metadata (`documentType`: trade licence, halal, ISO 22000, lab test, GMP, HACCP, organic), certificate numbers, issuing authorities, issue/expiry dates, file URLs, and inspection audit fields (`status`: pending, approved, rejected; `rejectionReason`, `reviewedById`, `reviewedByName`, `reviewDate`).
+     - `models/manufacturer-licence.entity.ts`: `ManufacturerLicence` entity modeling government accreditation registry entries (BSTI, BFSA, FDA) with licence status (`valid`, `expired`, `suspended`, `revoked`).
+     - `models/dto/`: `UploadDocumentDto`, `ReviewDocumentDto` (enforcing action validation and mandatory rejection reasons), and `VerifyLicenceDto`.
+     - `services/document.service.ts`: Core domain service containing:
+       - Document upload with issue and expiry date validation.
+       - Document review state machine transitioning `pending` -> `approved` or `pending` -> `rejected` (strictly validating mandatory rejection reason presence, and enforcing `inspector`/`admin` role authorization).
+       - Querying with status, type, and manufacturer filters, plus automatic computation of `isExpired`, `isExpiringSoon` (30 days window), and `daysUntilExpiry`.
+       - `verifyLicence(licenceNumber)`: Queries official demo registry, validating expiration, suspension, and remaining days.
+       - `getStatistics()`: Aggregates total, pending, approved, rejected, and expiring counts.
+     - `controllers/safety-document.controller.ts`: Ultra-thin controller (<25 lines per action) enforcing `AuthenticatedGuard` and `RolesGuard` (`@Roles('manufacturer', 'admin')` for upload; `@Roles('inspector', 'admin')` for review).
+     - `views/`:
+       - `documents.hbs`: Regulatory registry table with filter tabs, metric cards, status badges, inspector decision modal/panel, and mandatory food safety disclaimer.
+       - `upload.hbs`: Accessible submission form for manufacturers with standard legal declaration.
+       - `verify-licence.hbs`: Interactive licence lookup tool with quick-viva demo links.
+     - `food-safety.module.ts`: Modular Area encapsulation exporting `DocumentService`.
+  2. **Application & Database Integration**:
+     - Registered entities in `src/config/database.config.ts` and `src/app.module.ts`.
+     - Registered `FoodSafetyModule` in `src/app.module.ts`.
+     - Updated `src/shared/views/partials/navbar.hbs` with links to Safety Documents and Verify Licence, plus added `Inspector` to the quick viva role switcher.
+     - Updated `SeedService` with realistic manufacturer licences (BSTI, BFSA, FDA, expired, and suspended demo entries) and safety documents.
+- **Test Execution & Verification**:
+  - `src/areas/food-safety/services/document.service.spec.ts`: 14 unit tests (100% pass covering happy paths, review state transitions, mandatory rejection reason enforcement, edge cases, and registry verification).
+  - `src/areas/food-safety/controllers/safety-document.controller.spec.ts`: 7 unit tests (100% pass with AAA pattern and mock isolation).
+  - `test/safety.e2e-spec.ts`: 4 E2E integration tests verifying route accessibility and licence query.
+  - **Total Test Suites**: 9 passed, 68 unit tests passing cleanly with 0 failures.
+  - **Build Status**: `npm run build` executed with exit code 0.
+
+
+---
+
+### Entry 014 | 2026-11-15 00:48:00 +06:00 | Live Supabase Cloud PostgreSQL Sync & F06 Schema Verification
+- **Action**: Performed live cloud database synchronization and schema verification for **Feature F06** against the hosted Supabase PostgreSQL project (`wdetxndlgwizwycvmfwz`).
+- **Configuration Remediation**:
+  1. Identified duplicate `DATABASE_URL` entries in `.env` where an un-commented template string (`[YOUR-PASSWORD]`) shadowed the active connection string.
+  2. Standardized `.env` syntax by formatting commentary with `#` and cleanly selecting the active direct connection pooler (`aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres`).
+- **Live Database Verification**:
+  1. Bootstrapped NestJS `AppModule` against Supabase cloud PostgreSQL.
+  2. Verified TypeORM real-time schema synchronization (`synchronize: true`):
+     - Table `public.food_safety_documents` automatically created and populated (5 seeded rows: Halal, ISO 22000, Microbial Lab Analysis, Trade Licence, Organic Certificate).
+     - Table `public.manufacturer_licences` automatically created and populated (6 seeded rows: BSTI, BFSA, FDA active licences, expired licence, and suspended licence).
+  3. Verified all 7 public tables active in cloud Supabase: `users`, `food_products`, `ingredients`, `nutrition_facts`, `preference_profiles`, `food_safety_documents`, and `manufacturer_licences`.
+
+
+
+
 

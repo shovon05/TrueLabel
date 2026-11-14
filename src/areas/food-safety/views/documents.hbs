@@ -1,0 +1,256 @@
+<!-- Feature F06: Food safety documents & verified accreditations -->
+<div class="space-y-8">
+
+  <!-- Header Banner -->
+  <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+          Official Food Safety Registry
+        </span>
+        <span class="text-xs text-slate-500 font-medium">Feature F06</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+        Safety Documents & Verified Accreditations
+      </h1>
+      <p class="text-sm text-slate-600 mt-1 max-w-2xl">
+        Official repository of verified food manufacturing licences, ISO safety standards, halal certifications, and independent laboratory analysis reports.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="/safety/licence/verify" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        Verify Licence
+      </a>
+      {{#if (or (eq user.role 'manufacturer') (eq user.role 'admin'))}}
+        <a href="/safety/documents/upload" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Upload Document
+        </a>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- Notification Alerts -->
+  {{#if uploaded}}
+    <div class="p-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-semibold">Document submitted successfully!</span> It has been queued for certified food safety inspector verification.
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if reviewed}}
+    <div class="p-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-semibold">Inspector audit recorded!</span> The document status and audit notes have been updated in the registry.
+      </div>
+    </div>
+  {{/if}}
+
+  <!-- Metrics Overview Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white border border-slate-200 rounded-lg p-4">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Documents</div>
+      <div class="text-2xl font-black text-slate-900 mt-1">{{stats.total}}</div>
+      <div class="text-xs text-slate-400 mt-1">Submitted in registry</div>
+    </div>
+    <div class="bg-white border border-amber-200 rounded-lg p-4 bg-amber-50/30">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Pending Review</div>
+      <div class="text-2xl font-black text-amber-800 mt-1">{{stats.pending}}</div>
+      <div class="text-xs text-amber-600 mt-1">Awaiting inspector audit</div>
+    </div>
+    <div class="bg-white border border-emerald-200 rounded-lg p-4 bg-emerald-50/30">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Verified & Approved</div>
+      <div class="text-2xl font-black text-emerald-800 mt-1">{{stats.approved}}</div>
+      <div class="text-xs text-emerald-600 mt-1">Officially authenticated</div>
+    </div>
+    <div class="bg-white border border-rose-200 rounded-lg p-4 bg-rose-50/30">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-rose-700">Expiring Soon (30d)</div>
+      <div class="text-2xl font-black text-rose-800 mt-1">{{stats.expiringSoon}}</div>
+      <div class="text-xs text-rose-600 mt-1">Renewal required</div>
+    </div>
+  </div>
+
+  <!-- Filter Navigation Tabs -->
+  <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+    <div class="flex items-center gap-2 overflow-x-auto">
+      <a href="/safety/documents" class="px-3 py-1.5 rounded-md text-xs font-semibold {{#if (eq currentFilter.status 'all')}}bg-slate-900 text-white{{else}}text-slate-600 hover:bg-slate-100{{/if}}">
+        All Documents
+      </a>
+      <a href="/safety/documents?status=pending" class="px-3 py-1.5 rounded-md text-xs font-semibold {{#if (eq currentFilter.status 'pending')}}bg-amber-600 text-white{{else}}text-slate-600 hover:bg-slate-100{{/if}}">
+        Pending Verification ({{stats.pending}})
+      </a>
+      <a href="/safety/documents?status=approved" class="px-3 py-1.5 rounded-md text-xs font-semibold {{#if (eq currentFilter.status 'approved')}}bg-emerald-700 text-white{{else}}text-slate-600 hover:bg-slate-100{{/if}}">
+        Verified & Approved ({{stats.approved}})
+      </a>
+      <a href="/safety/documents?status=rejected" class="px-3 py-1.5 rounded-md text-xs font-semibold {{#if (eq currentFilter.status 'rejected')}}bg-rose-700 text-white{{else}}text-slate-600 hover:bg-slate-100{{/if}}">
+        Rejected ({{stats.rejected}})
+      </a>
+    </div>
+
+    {{#if (or (eq user.role 'inspector') (eq user.role 'admin'))}}
+      <span class="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded border border-amber-300">
+        <svg class="w-3.5 h-3.5 text-amber-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        Inspector Mode Active
+      </span>
+    {{/if}}
+  </div>
+
+  <!-- Documents Registry Table -->
+  <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    {{#if documents.length}}
+      <div class="divide-y divide-slate-200">
+        {{#each documents}}
+          <div class="p-6 transition-colors hover:bg-slate-50/50">
+            <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+              
+              <!-- Document Details -->
+              <div class="space-y-2 flex-grow">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold tracking-tight bg-slate-100 text-slate-800 border border-slate-200">
+                    {{this.formattedType}}
+                  </span>
+
+                  {{#if (eq this.status 'approved')}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      <svg class="w-3.5 h-3.5 text-emerald-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                      Verified & Approved
+                    </span>
+                  {{else if (eq this.status 'rejected')}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                      <svg class="w-3.5 h-3.5 text-rose-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                      Audit Rejected
+                    </span>
+                  {{else}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                      <svg class="w-3.5 h-3.5 text-amber-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      Pending Verification
+                    </span>
+                  {{/if}}
+
+                  {{#if this.isExpired}}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-rose-900 text-white">
+                      EXPIRED
+                    </span>
+                  {{else if this.isExpiringSoon}}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500 text-white">
+                      Expires in {{this.daysUntilExpiry}} days
+                    </span>
+                  {{/if}}
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900 tracking-tight">
+                    {{this.certificateNumber}}
+                  </h3>
+                  <div class="text-sm font-semibold text-slate-700">
+                    {{this.companyName}}
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-1 gap-x-4 text-xs text-slate-600 pt-1">
+                  <div>
+                    <span class="font-bold text-slate-400 uppercase text-[10px] block">Issuing Authority</span>
+                    <span class="font-medium text-slate-900">{{this.issuer}}</span>
+                  </div>
+                  <div>
+                    <span class="font-bold text-slate-400 uppercase text-[10px] block">Issue Date</span>
+                    <span class="font-medium text-slate-800">{{this.issueDate}}</span>
+                  </div>
+                  <div>
+                    <span class="font-bold text-slate-400 uppercase text-[10px] block">Expiry Date</span>
+                    <span class="font-medium text-slate-800">{{this.expiryDate}}</span>
+                  </div>
+                </div>
+
+                {{#if this.notes}}
+                  <div class="text-xs text-slate-500 bg-slate-50 p-2.5 rounded border border-slate-200 mt-2">
+                    <span class="font-bold text-slate-700">Audit Notes:</span> {{this.notes}}
+                  </div>
+                {{/if}}
+
+                {{#if this.rejectionReason}}
+                  <div class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded border border-rose-200 mt-2">
+                    <span class="font-bold text-rose-900">Rejection Cause:</span> {{this.rejectionReason}}
+                  </div>
+                {{/if}}
+
+                {{#if this.reviewedByName}}
+                  <div class="text-[11px] text-slate-400 pt-1">
+                    Audited by <span class="font-semibold text-slate-700">{{this.reviewedByName}}</span> on {{this.reviewDate}}
+                  </div>
+                {{/if}}
+              </div>
+
+              <!-- Inspector Actions Section -->
+              <div class="lg:w-80 flex-shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l lg:pl-6 border-slate-200">
+                {{#if (or (eq ../user.role 'inspector') (eq ../user.role 'admin'))}}
+                  {{#if (eq this.status 'pending')}}
+                    <div class="space-y-3">
+                      <div class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                        Inspector Decision
+                      </div>
+
+                      <!-- Approve Action -->
+                      <form action="/safety/documents/{{this.id}}/review" method="POST">
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="notes" value="Official inspector verification approved">
+                        <button type="submit" class="w-full px-3 py-2 rounded text-xs font-bold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                          Approve & Authenticate
+                        </button>
+                      </form>
+
+                      <!-- Reject Action with required reason -->
+                      <form action="/safety/documents/{{this.id}}/review" method="POST" class="space-y-2">
+                        <input type="hidden" name="action" value="reject">
+                        <textarea name="rejectionReason" rows="2" required placeholder="Mandatory reason for rejection..." class="w-full text-xs p-2 rounded border border-rose-300 focus:ring-1 focus:ring-rose-500 bg-rose-50/20"></textarea>
+                        <button type="submit" class="w-full px-3 py-2 rounded text-xs font-bold bg-rose-700 text-white hover:bg-rose-800 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Reject Document
+                        </button>
+                      </form>
+                    </div>
+                  {{else}}
+                    <div class="text-xs text-slate-500 space-y-1">
+                      <div class="font-bold text-slate-700">Audit Status Complete</div>
+                      <div>Decision: <span class="font-semibold uppercase {{#if (eq this.status 'approved')}}text-emerald-700{{else}}text-rose-700{{/if}}">{{this.status}}</span></div>
+                    </div>
+                  {{/if}}
+                {{else}}
+                  <div class="text-xs text-slate-500 space-y-1">
+                    <div class="font-bold text-slate-700">Accreditation Trust Seal</div>
+                    <div>{{#if (eq this.status 'approved')}}Verified by certified food safety authority.{{else}}Under evaluation.{{/if}}</div>
+                  </div>
+                {{/if}}
+              </div>
+
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="p-12 text-center">
+        <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <h3 class="text-sm font-bold text-slate-800">No safety documents found</h3>
+        <p class="text-xs text-slate-500 mt-1">No documents match the current filter criteria.</p>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Mandatory Regulatory & Safety Disclaimer -->
+  <div class="p-4 rounded-lg bg-slate-100 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
+    <svg class="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+    <div>
+      <div class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Official Food Safety & Accreditation Disclaimer</div>
+      <div>
+        TrueLabel cross-references food safety accreditations, ISO standards, and trade licences against accredited regulatory bodies including BSTI, BFSA, and international accreditation issuers. Verification records represent authenticated documents at time of inspection and do not replace statutory physical inspections.
+      </div>
+    </div>
+  </div>
+
+</div>

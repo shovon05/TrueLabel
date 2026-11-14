@@ -5,6 +5,8 @@ import { FoodProduct } from '../areas/food-catalog/models/food-product.entity';
 import { Ingredient } from '../areas/food-catalog/models/ingredient.entity';
 import { NutritionFact } from '../areas/food-catalog/models/nutrition-fact.entity';
 import { PreferenceProfile } from '../areas/personal-food/models/preference-profile.entity';
+import { FoodSafetyDocument } from '../areas/food-safety/models/food-safety-document.entity';
+import { ManufacturerLicence } from '../areas/food-safety/models/manufacturer-licence.entity';
 
 dotenv.config();
 
@@ -14,6 +16,8 @@ const ALL_ENTITIES = [
   Ingredient,
   NutritionFact,
   PreferenceProfile,
+  FoodSafetyDocument,
+  ManufacturerLicence,
 ];
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {

@@ -1,0 +1,181 @@
+<!-- Feature F06: Food safety document submission -->
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <!-- Header -->
+  <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+    <div class="flex items-center gap-2 mb-1">
+      <a href="/safety/documents" class="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Back to Documents Registry
+      </a>
+      <span class="text-slate-300">/</span>
+      <span class="text-xs text-slate-500 font-medium">Feature F06</span>
+    </div>
+    <h1 class="text-2xl font-black text-slate-900 tracking-tight">
+      Submit Food Safety Document or Certification
+    </h1>
+    <p class="text-sm text-slate-600 mt-1">
+      Upload regulatory trade licences, halal accreditations, ISO 22000 certificates, or laboratory chemical and microbial test reports for official inspector authentication.
+    </p>
+  </div>
+
+  <!-- Submission Form -->
+  <div class="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 shadow-sm">
+    <form action="/safety/documents/upload" method="POST" class="space-y-6">
+      
+      <!-- Company Information -->
+      <div>
+        <label for="companyName" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+          Registered Company / Manufacturer Name <span class="text-rose-600">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="companyName" 
+          name="companyName" 
+          required 
+          value="{{formData.companyName}}"
+          placeholder="e.g. OatLand Organics Ltd." 
+          class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-medium"
+        >
+      </div>
+
+      <!-- Document Type & Certificate Number -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="documentType" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            Document / Certification Type <span class="text-rose-600">*</span>
+          </label>
+          <select 
+            id="documentType" 
+            name="documentType" 
+            required 
+            class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-medium"
+          >
+            <option value="trade_licence">Trade & Commercial Licence</option>
+            <option value="halal">Halal Certification</option>
+            <option value="iso22000">ISO 22000 Food Safety System</option>
+            <option value="lab_test">Independent Laboratory Analysis</option>
+            <option value="gmp">Good Manufacturing Practice (GMP)</option>
+            <option value="haccp">HACCP Hazard Control</option>
+            <option value="organic">Certified Organic Standard</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="certificateNumber" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            Certificate / Licence Number <span class="text-rose-600">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="certificateNumber" 
+            name="certificateNumber" 
+            required 
+            value="{{formData.certificateNumber}}"
+            placeholder="e.g. BSTI-FOOD-2024-8849" 
+            class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-mono"
+          >
+        </div>
+      </div>
+
+      <!-- Issuing Body -->
+      <div>
+        <label for="issuer" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+          Issuing Body or Accreditation Authority <span class="text-rose-600">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="issuer" 
+          name="issuer" 
+          required 
+          value="{{formData.issuer}}"
+          placeholder="e.g. BSTI, BFSA, Islamic Foundation Bangladesh, SGS International" 
+          class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-medium"
+        >
+      </div>
+
+      <!-- Dates -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="issueDate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            Issue Date <span class="text-rose-600">*</span>
+          </label>
+          <input 
+            type="date" 
+            id="issueDate" 
+            name="issueDate" 
+            required 
+            value="{{formData.issueDate}}"
+            class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-medium"
+          >
+        </div>
+
+        <div>
+          <label for="expiryDate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            Expiry Date <span class="text-rose-600">*</span>
+          </label>
+          <input 
+            type="date" 
+            id="expiryDate" 
+            name="expiryDate" 
+            required 
+            value="{{formData.expiryDate}}"
+            class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-medium"
+          >
+          <span class="text-[11px] text-slate-400 mt-1 block">Expiry date must be on or after the issue date.</span>
+        </div>
+      </div>
+
+      <!-- File URL / Document Reference -->
+      <div>
+        <label for="fileUrl" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+          Document File Storage URL / Digital Copy Reference (Optional)
+        </label>
+        <input 
+          type="url" 
+          id="fileUrl" 
+          name="fileUrl" 
+          value="{{formData.fileUrl}}"
+          placeholder="https://storage.truelabel.demo/certs/certificate.pdf" 
+          class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-mono text-xs"
+        >
+      </div>
+
+      <!-- Notes / Audit Details -->
+      <div>
+        <label for="notes" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+          Submission Notes & Scope of Accreditation (Optional)
+        </label>
+        <textarea 
+          id="notes" 
+          name="notes" 
+          rows="3" 
+          placeholder="Specify batch limits, production line audit details, or specific standard scopes..."
+          class="w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+        >{{formData.notes}}</textarea>
+      </div>
+
+      <!-- Legal Declaration -->
+      <div class="p-4 rounded-md bg-slate-50 border border-slate-200 text-xs text-slate-600">
+        <label class="flex items-start gap-2 cursor-pointer">
+          <input type="checkbox" required class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+          <span>
+            I declare under regulatory penalty that the document information submitted is authentic, unexpired, and verifiable against the official accredited issuer.
+          </span>
+        </label>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+        <a href="/safety/documents" class="px-4 py-2 text-xs font-bold rounded border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors">
+          Cancel
+        </a>
+        <button type="submit" class="px-5 py-2.5 text-xs font-bold rounded bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Submit for Inspector Verification
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

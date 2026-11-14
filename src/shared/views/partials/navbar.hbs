@@ -15,13 +15,17 @@
     <!-- Navigation Links -->
     <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
       <a href="/catalog" class="hover:text-slate-900 transition-colors">Catalog Discovery</a>
+      <a href="/safety/documents" class="hover:text-slate-900 transition-colors">Safety Documents</a>
+      <a href="/safety/licence/verify" class="hover:text-slate-900 transition-colors">Verify Licence</a>
       {{#if user}}
         <a href="/personal/profile" class="hover:text-emerald-700 transition-colors font-medium">Dietary Profile</a>
       {{/if}}
       {{#if (eq user.role "manufacturer")}}
+        <a href="/safety/documents/upload" class="hover:text-emerald-700 font-semibold transition-colors">+ Upload Certificate</a>
         <a href="/catalog/manage/create" class="hover:text-emerald-700 font-semibold transition-colors">+ Add Product</a>
       {{/if}}
       {{#if (eq user.role "admin")}}
+        <a href="/safety/documents/upload" class="hover:text-emerald-700 font-semibold transition-colors">+ Upload Certificate</a>
         <a href="/catalog/manage/create" class="hover:text-emerald-700 font-semibold transition-colors">+ Add Product</a>
       {{/if}}
     </nav>
@@ -33,6 +37,7 @@
         <span class="text-slate-400 font-medium px-2">Role:</span>
         <a href="/auth/switch-role/consumer" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'consumer')}}bg-white text-slate-900 shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Consumer</a>
         <a href="/auth/switch-role/manufacturer" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'manufacturer')}}bg-emerald-600 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Manufacturer</a>
+        <a href="/auth/switch-role/inspector" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'inspector')}}bg-amber-600 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Inspector</a>
         <a href="/auth/switch-role/admin" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'admin')}}bg-slate-900 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Admin</a>
       </div>
 

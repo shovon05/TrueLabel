@@ -152,7 +152,7 @@ gantt
 | **P1** | **Shared** | **Identity & RBAC System** | `identity` | Multi-role registration & login (Guest, Consumer, Manufacturer, Inspector, Admin), bcrypt password hashing, session guards, master layouts. |
 | **P1** | **F01** | **Food Catalog Management & Discovery** | `food-catalog` | Manufacturer/Admin food creation & editing, duplicate barcode rejection, full-text search by name/brand/barcode, multi-attribute filtering (category, dietary tags, score range), food detail view with ingredient and nutrition breakdowns. |
 | **P1** | **F16** | **Food Preference & Allergen Profile** | `personal-food` | Consumer personal profile setup (allergies, dietary preferences, nutrition goals, body metrics). Dynamic conflict detection highlighting allergen warnings directly on catalog food pages. |
-| **P2** | **F06** | **Licence & Document Foundation** | `food-safety` | Manufacturer licence number verification against demo registry, safety document upload (certificate/lab test), document review state machine (`pending` → `approved`/`rejected`). |
+| **P2** | **F06** | **Licence & Document Foundation** | `food-safety` | **[Delivered]** Manufacturer licence verification against official demo registry (BSTI/BFSA/FDA), safety document submission, and inspector review state machine (`pending` → `approved`/`rejected`). |
 | **P2** | **F11/F13**| **Review & Complaint Data Models** | `community` | Core entity schemas and repository foundations for consumer reviews and incident reporting. |
 
 ---
