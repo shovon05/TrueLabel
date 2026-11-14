@@ -238,5 +238,21 @@
   - **Build Status**: `npm run build` executed with exit code 0.
 
 
+---
+
+### Entry 014 | 2026-11-15 00:48:00 +06:00 | Live Supabase Cloud PostgreSQL Sync & F06 Schema Verification
+- **Action**: Performed live cloud database synchronization and schema verification for **Feature F06** against the hosted Supabase PostgreSQL project (`wdetxndlgwizwycvmfwz`).
+- **Configuration Remediation**:
+  1. Identified duplicate `DATABASE_URL` entries in `.env` where an un-commented template string (`[YOUR-PASSWORD]`) shadowed the active connection string.
+  2. Standardized `.env` syntax by formatting commentary with `#` and cleanly selecting the active direct connection pooler (`aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres`).
+- **Live Database Verification**:
+  1. Bootstrapped NestJS `AppModule` against Supabase cloud PostgreSQL.
+  2. Verified TypeORM real-time schema synchronization (`synchronize: true`):
+     - Table `public.food_safety_documents` automatically created and populated (5 seeded rows: Halal, ISO 22000, Microbial Lab Analysis, Trade Licence, Organic Certificate).
+     - Table `public.manufacturer_licences` automatically created and populated (6 seeded rows: BSTI, BFSA, FDA active licences, expired licence, and suspended licence).
+  3. Verified all 7 public tables active in cloud Supabase: `users`, `food_products`, `ingredients`, `nutrition_facts`, `preference_profiles`, `food_safety_documents`, and `manufacturer_licences`.
+
+
+
 
 
