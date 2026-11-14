@@ -46,6 +46,8 @@ You should see four lines pointing `origin` to your fork and `upstream` to `shov
 
 ## Phase 2: Starting & Building a New Feature
 
+Here examples are given regarding F17 feature, you should always use your own feature ID for creating branch and for the commands.
+
 Whenever you are ready to work on a new task or feature (for example, `F17`):
 
 ### 1. Sync Your `main` Branch First
@@ -91,15 +93,20 @@ git rebase upstream/main
 
 ### 2. Push Your Feature Branch to Your Fork (`origin`)
 ```bash
-git push -u origin F17
+git push -u origin <branch name>
+```
+else if you have worked on main branch then
+
+```bash
+git push -u origin main
 ```
 
 ### 3. Open a Pull Request (PR)
 1. Go to your fork on GitHub (`https://github.com/<YOUR-USERNAME>/TrueLabel`).
-2. Click the yellow **Compare & pull request** banner at the top.
+2. Click the **Contribute** button at the top.
 3. Double-check the branch dropdowns at the top of the PR page:
    * **base repository:** `shovon05/TrueLabel` | **base:** `main`
-   * **head repository:** `<YOUR-USERNAME>/TrueLabel` | **compare:** `F17`
+   * **head repository:** `<YOUR-USERNAME>/TrueLabel` | **compare:** `F17`(Branch name)
 4. Write a short summary of what you built and click **Create pull request**.
 
 ### 4. Review & Merge
